@@ -1,6 +1,7 @@
 //check if a binary tree is balanced
 // 110.
 
+//other approach - at each node find left height, right height and check balance factor which gives a runtime of O(n^2)
 /**
  * Definition for a binary tree node.
  * public class TreeNode {
