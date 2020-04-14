@@ -35,4 +35,27 @@ class Solution {
         }
         return false;
     }
+    
+    // 100.
+    //time - O(n)
+    //space - O(h)
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        //base
+        if(p == null && q == null) //both null
+        {
+            return true;
+        }
+        if(p == null || q == null) //only one is null
+        {
+            return false;
+        }
+        //logic
+        //if val of p and q are same
+        //then compare left of p with left of q and right of p with right of q for equality
+        if(p.val == q.val) 
+        {
+            return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+        }
+        return false;
+    }
 }
