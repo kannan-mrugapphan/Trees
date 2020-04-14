@@ -58,4 +58,28 @@ class Solution {
         }
         return false;
     }
+    
+    // 572.
+    //time - O(n ^ 2)
+    //space - O(h)
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        //t - sub tree and s - main tree
+        //base
+        if(t == null)
+        {
+            return true; //null is a subtree of any tree
+        }
+        if(s == null)
+        {
+            return false; //main tree itself is null
+        }
+        if(isSameTree(s, t))
+        {
+            return true; //both trees are same
+        }
+        
+        //logic
+        //recurse on left and right to find same tree
+        return (isSubtree(s.left, t) || isSubtree(s.right, t));
+    }
 }
