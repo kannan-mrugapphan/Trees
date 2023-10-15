@@ -1,76 +1,92 @@
-//check if a binary tree is balanced
 // 110.
-
-//other approach - at each node find left height, right height and check balance factor which gives a runtime of O(n^2)
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     int val;
- *     TreeNode left;
- *     TreeNode right;
- *     TreeNode(int x) { val = x; }
- * }
- */
-
-//every node returns its height and is balanced or not to its caller
-public class returnObject {
-    int height;
-    boolean isBalanced;
-    
-    public returnObject(int height, boolean isBalanced) {
-        this.height = height;
-        this.isBalanced = isBalanced;
-    }
-}
-
-//time - O(n) every noode is touched once
-//space - O(h) max recursive stack size is haight of tree
-
-
 class Solution {
     public boolean isBalanced(TreeNode root) {
-        boolean answer = findBalanced(root).isBalanced;
-        return answer;
+        //for a binary tree to be balanced,
+        //|left subtree height - right subtree height| <= 1 for all nodes  
+        int height = checkBalancedAndFindHeight(root);  
+        if(height == -1)
+        {
+            return false;
+        }    
+        return true;
     }
-    
-    private returnObject findBalanced(TreeNode root)
+
+    //returns height of node
+    //time - O(n) - postorder traversal
+    //space - O(h)
+    private int findHeight(TreeNode root)
     {
         //base
+        //if root is null at start or becomes null due to a parent call
         if(root == null)
         {
-            return new returnObject(-1, true); //null node has height -1 and is balanced
+            return 0; //height of empty tree
         }
-        
-        //logic
-        returnObject left = findBalanced(root.left);
-        returnObject right = findBalanced(root.right);
-        
-        int height = Math.max(left.height, right.height) + 1; //height of a node is max of left height and right height plus 1 
-        boolean balanced = false;
-        if(Math.abs(left.height - right.height) <= 1 && left.isBalanced && right.isBalanced) //a node is balanced if abs(left height - right height) <= 1 and both left and right ssubtrees must be balanced
+
+        //height of current root = 1 + max(height of left subtree, height of right subtree)
+        int leftSubtreeHeight = findHeight(root.left);
+        int rightSubtreeHeight = findHeight(root.right);
+        return 1 + Math.max(leftSubtreeHeight, rightSubtreeHeight);
+    }
+
+    //checks if i/p tree is balanced
+    //time - O(n^2) as each node is traversed and lh-rh is computed for each node
+    //space - O(h^2) 
+    private boolean check(TreeNode root)
+    {
+        //base
+        //if root is null at start or becomes null due to a parent call
+        if(root == null)
         {
-            balanced = true;
+            return true; //empty tree is balanced
+        }
+
+        //check if current node is valid
+        int leftSubtreeHeight = findHeight(root.left);
+        int rightSubtreeHeight = findHeight(root.right);
+        if(Math.abs(leftSubtreeHeight - rightSubtreeHeight) > 1)
+        {
+            return false; //current root is invalid as abs diff is above 1
+        }
+
+        //current root is valid, check left and right sub trees
+        return check(root.left) && check(root.right);
+    }
+
+    //returns -1 if root is not balanced else returns height of root
+    //time - O(n) -> find height code
+    //space - O(h)
+    private int checkBalancedAndFindHeight(TreeNode root)
+    {
+        //base
+        //if root is null at start or becomes null due to a parent call
+        if(root == null)
+        {
+            return 0; //height of empty tree
+        }
+
+        //height of current root = 1 + max(height of left subtree, height of right subtree)
+        int leftSubtreeHeight = checkBalancedAndFindHeight(root.left);
+        //check if left subtree is balanced
+        if(leftSubtreeHeight == -1)
+        {
+            return -1;
+        }
+
+        int rightSubtreeHeight = checkBalancedAndFindHeight(root.right);
+        //check if right subtree is balanced
+        if(rightSubtreeHeight == -1)
+        {
+            return -1;
         }
         
-        return new returnObject(height, balanced);
+        //check if current root is balanced
+        if(Math.abs(leftSubtreeHeight - rightSubtreeHeight) > 1)
+        {
+            return -1; //current root not balanced
+        }
+
+        //current root balanced, return its height
+        return 1 + Math.max(leftSubtreeHeight, rightSubtreeHeight); 
     }
 }
-
-// call stack
-// fb(3) -> fb(9) -> fb(null) 
-//                <- -1, true
-//                -> fb(null)
-//                <- -1, true
-//       <- 0, true
-//       -> fb(20) -> fb(15) -> fb(null)
-//                           <- -1, true
-//                           -> fb(null)
-//                           <- -1, true
-//                 <- 0, true
-//                 -> fb(7) -> fb(null)
-//                          <- -1, true
-//                          -> fb(null)
-//                          <- -1, true
-//                 <- 0, true
-//       <- 1, true
-// <- 2, true    
