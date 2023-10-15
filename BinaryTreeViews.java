@@ -98,3 +98,63 @@ class Solution {
         return;
     }
 }
+
+class Solution
+{
+    //Function to return a list containing the bottom view of the given tree.
+    public ArrayList <Integer> bottomView(Node root)
+    {
+        ArrayList<Integer> result = new ArrayList<>(); //return list
+        //edge
+        if(root == null)
+        {
+            return result;
+        }
+        
+        //key - vertical, val - first/last node on vertical based on flag and height of that node in an int[]
+        //treemap is needed for storing vertical in sorted order
+        //can be optimized with hashmap and storing min and max verticals
+        TreeMap<Integer, int[]> store = new TreeMap<>();
+        buildStore(root, 0, 0, store, false);
+        
+        for(Integer vertical : store.keySet())
+        {
+            result.add(store.get(vertical)[0]);
+        }
+        
+        return result;
+    }
+    
+    //i/p - root, vertical of root, height of root, store and flag to check if top or bottom view is needed
+    private void buildStore(Node root, int vertical, int height, TreeMap<Integer, int[]> store, boolean isTop)
+    {
+        //base 
+        if(root == null)
+        {
+            return;
+        }
+        
+        //process current node
+        if(isTop)
+        {
+            //first node in each vertical is needed if flag is top view
+            if(!store.containsKey(vertical))
+            {
+                store.put(vertical, new int[] { root.data, height }); 
+            }
+        }
+        else
+        {
+            if(!store.containsKey(vertical) || store.get(vertical)[1] <= height)
+            {
+                //last node in each vertical at largest is needed if flag is bottom view
+                store.put(vertical, new int[] { root.data, height }); 
+            }
+        }
+        
+        //left is at -1 vertical and right is at +1 vertical
+        buildStore(root.left, vertical - 1, height + 1, store, isTop);
+        buildStore(root.right, vertical + 1, height + 1, store, isTop);
+        
+    }
+}
