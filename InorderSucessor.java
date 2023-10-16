@@ -1,51 +1,36 @@
 // 285.
-// brute force - find inorder traversal store it in list[] 
-//time - O(log n)
-//space - constant
 class Solution {
     public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
-        //edge
-        if(root == null)
-        {
-            return null;
-        }
-        //if given node has a right subtree, then its inorder sucessor is the minimum node in right subtree of p
-        if(p.right != null)
-        {
-            return findMin(p.right);
-        }
-        //if the right sub tree of p is null,
-        //then its in order sucessor is the node obtained by taking the last left while seraching p in tree
-        return search(root, p);
+        return findInorderSuccessor(root, p);
     }
-    
-    //time - O(h)
-    //space - constant
-    public TreeNode findMin(TreeNode root) {
-        //go as left as possible and return that node whose left child is null
-        while(root.left != null)
-        {
-            root = root.left;
-        }
-        return root;
-    }
-    
+
     //time - O(log n)
     //space - constant
-    private TreeNode search(TreeNode root, TreeNode target) {
-        TreeNode sucessor = null; //return node
-        while(root != target)
+    private TreeNode findInorderSuccessor(TreeNode root, TreeNode p)
+    {
+        TreeNode sucessor = null; //to account for case when target is largest in bst and doesn't have a successor
+
+        //as long as there are more nodes
+        while(root != null)
         {
-            if(target.val > root.val)
+            if(root.val <= p.val)
             {
+                //all elements in left sub tree including the root are smaller than p and can never be the successor
+                //root might be equal to p
+                //sucessor will lie on the right
                 root = root.right;
             }
-            else //store current in result if left path is taken
+
+            else if(root.val > p.val)
             {
+                //all elements in right subtree are larger than p
+                //root is also larger than p
+                //update result with root, discard right sub tree and continue searching in left for target
                 sucessor = root;
                 root = root.left;
             }
         }
+
         return sucessor;
     }
 }
