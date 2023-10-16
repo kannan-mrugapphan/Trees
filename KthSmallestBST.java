@@ -1,59 +1,74 @@
-// 230.
-// brute force - inorder travers tree and store into result list - return k - 1st index
+//230.
+//if kth largest element is asked, perform reverse inorder - right subtree, root, left subtree
+//brute force - store inorder traversal in list and return kth index
 class Solution {
-    int counter = 0;
-    int result = 0;
     public int kthSmallest(TreeNode root, int k) {
-        //edge
-        if(root == null)
-        {
-            return 0;
-        }
-        dfsRecursive(root, k);
-        return result;
+        // int[] result = new int[2]; //intially [0,0]
+        // inorderTraversal(root, k, result);
+        // return result[0];
+
+        return inorderTraversalIterative(root, k);
     }
-    
-    //time - O(h + k) - visiting every level irrespective of value of k
-    //space - O(h) - max stack size is height of tree
-    private int dfsIterative(TreeNode root, int k) {
-        Stack<TreeNode> support = new Stack<>(); //mimics call stack
-        while(root != null || !support.isEmpty())
-        {
-            while(root != null)
-            {
-                support.push(root);
-                root = root.left;
-            }
-            //when processing the node, decrement k and return that node when k hits 0
-            TreeNode top = support.pop();
-            k--;
-            if(k == 0)
-            {
-                return top.val;
-            }
-            root = top.right;
-        }
-        return -1; //code never reahes here
-    }
-    
-    //time - O(h + k)
-    //space - O(h) - max stack size is height of tree
-    private void dfsRecursive(TreeNode root, int k) {
+
+    //i/p - root, k, result[2] where 0th index is kth smallest element and 1st index tracks the position of current node in inorder traversal
+    //time - O(n) - inorder traversal
+    //space - O(h)
+    private void inorderTraversal(TreeNode root, int k, int[] result)
+    {
         //base
         if(root == null)
         {
             return;
         }
-        //logic
-        dfsRecursive(root.left, k); //recurse on left sub tree
-        //when processing the node, incremnt counter and return that node when counter hits k
-        counter++;
-        if(counter == k)
+
+        inorderTraversal(root.left, k, result); //explore left subtree
+        //increase counter to account for current node
+        result[1]++;
+        //check if root is kth node
+        if(result[1] == k)
         {
-            result = root.val;
+            result[0] = root.val; //track kth smallest in result
+            //don't continue exploring other nodes
             return;
         }
-        dfsRecursive(root.right, k); //recurse on right sub tree
-        return;
+
+        inorderTraversal(root.right, k, result); //explore left subtree
+    }
+
+    //time - O(n) - inorder traversal
+    //space - O(h)
+    private int inorderTraversalIterative(TreeNode root, int k)
+    {
+        Stack<TreeNode> support = new Stack<>();
+
+        while(true)
+        {
+            if(root != null)
+            {
+                support.push(root);
+                root = root.left; //explore left subtree first
+            }
+            else
+            {
+                if(support.isEmpty())
+                {
+                    break; //k > number of nodes in tree
+                }
+
+                root = support.pop();
+                //account for root;
+                k--;
+
+                if(k == 0)
+                {
+                    //root is kth smallest element
+                    return root.val;
+                }
+
+                root = root.right; //explore right subtree
+            }
+        }
+
+        return -1;
     }
 }
