@@ -158,3 +158,93 @@ class Solution
         
     }
 }
+
+//Bottom View
+class Solution
+{
+    //time - O(n) for bfs + O(number of verticals) to build result list
+    //space - O(n) for bfs (queue) + O(number of verticals) for map
+    public ArrayList <Integer> bottomView(Node root)
+    {
+        ArrayList<Integer> result = new ArrayList<>(); //return list
+        
+        //edge
+        if(root == null)
+        {
+            return result;
+        }
+        
+        int minVertical = Integer.MAX_VALUE; //should be minimized
+        int maxVertical = Integer.MIN_VALUE; //should be maximized
+        
+        Queue<NodeInfo> support = new LinkedList<>(); //for bfs
+        support.offer(new NodeInfo(root, 0, 0)); //root is at vertical 0 and level 0
+        
+        //key - vertical, val - node that will be selected in each vertical for bottom view
+        HashMap<Integer, NodeInfo> store = new HashMap<>();
+        
+        while(!support.isEmpty())
+        {
+            int levelSize = support.size(); //number of nodes in current level is queue size at iteration start
+            //process all nodes in current level
+            for(int i = 0; i < levelSize; i++)
+            {
+                NodeInfo current = support.poll();
+                
+                //update min and max verticals
+                minVertical = Math.min(minVertical, current.vertical);
+                maxVertical = Math.max(maxVertical, current.vertical);
+                
+                //add to store map
+                if(!store.containsKey(current.vertical))
+                {
+                    //first node in current vertical
+                    store.put(current.vertical, current);
+                }
+                else
+                {
+                    //update prev entry if current node is at larger level or same level (bottom view)
+                    //if top view <= becomes >= 
+                    if(store.get(current.vertical).level <= current.level)
+                    {
+                        store.put(current.vertical, current);    
+                    }
+                }
+                
+                //process children
+                if(current.node.left != null)
+                {
+                    support.offer(new NodeInfo(current.node.left, current.vertical - 1, current.level + 1));
+                }
+                
+                if(current.node.right != null)
+                {
+                    support.offer(new NodeInfo(current.node.right, current.vertical + 1, current.level + 1));
+                }
+            }
+        }
+        
+        //build result list
+        for(int vertical = minVertical; vertical <= maxVertical; vertical++)
+        {
+            result.add(store.get(vertical).node.data);
+        }
+        
+        
+        return result;
+    }
+}
+
+class NodeInfo
+{
+    public Node node;
+    public int vertical;
+    public int level;
+    
+    public NodeInfo(Node _node, int _vertical, int _level)
+    {
+        this.node = _node;
+        this.vertical = _vertical;
+        this.level = _level;
+    }
+}
