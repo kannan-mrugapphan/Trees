@@ -134,3 +134,71 @@ class Solution {
         return root;
     }
 }
+
+//Floor and Ceil of a target in BST
+// 270.
+class Solution {
+    public int closestValue(TreeNode root, double target) {
+        //closest value is either the floor or ceil of target (one out of two that is more closer to target)
+        int floor = findClosestValue(root, target, true);
+        int ceil = findClosestValue(root, target, false);
+
+        //if floor is not present, return ceil and vice versa
+        if(floor == -1)
+        {
+            return ceil;
+        }
+        if(ceil == -1)
+        {
+            return floor;
+        }
+
+        //if ceil is more closer to target than floor
+        if(Math.abs(ceil * 1.0 - target) < Math.abs(floor * 1.0 - target))
+        {
+            return ceil;
+        }
+
+        return floor; //floor is more closer
+    }
+
+    //returns ceil of target if flag is false else returns floor of target
+    //time - O(log n) with constant space
+    private int findClosestValue(TreeNode root, double target, boolean flag)
+    {
+        int result = -1; //to account for cases when ceil (or floor) is not possible for a given target
+
+        while(root != null)
+        {
+            //check if target is found
+            if(root.val * 1.0 == target)
+            {
+                return root.val; //return int version
+            }
+
+            else if(root.val * 1.0 > target)
+            {
+                //target is in left subtree
+                //if ceil is requested, root can potentially be the ceil
+                if(!flag)
+                {
+                    result = root.val;
+                }
+                root = root.left; //search for target or potentially more closer ones in left
+            }
+
+            else if(root.val * 1.0 < target)
+            {
+                //target is in right subtree
+                //if floor is requested, root can potentially be the floor
+                if(flag)
+                {
+                    result = root.val;
+                }
+                root = root.right; //search for target or potentially more closer ones in right
+            }
+        }
+
+        return result;
+    }
+}
