@@ -1,3 +1,68 @@
+//Search for a target in BST
+// 700.
+class Solution {
+    public TreeNode searchBST(TreeNode root, int val) {
+        return searchRecursive(root, val);
+    }
+
+    //time - O(log n)
+    //space - constant
+    private TreeNode search(TreeNode root, int val)
+    {
+        //as long as root is not null
+        while(root != null)
+        {
+            //check if root is target
+            if(root.val == val)
+            {
+                return root;
+            }
+
+            else if(root.val < val)
+            {
+                //target is in right subtree
+                root = root.right;
+            }
+
+            else if(root.val > val)
+            {
+                //target is in left subtree
+                root = root.left;
+            }
+        }
+
+        return null; //target not found
+    }
+
+    //time - O(log n)
+    //space - O(log n) for call stack
+    private TreeNode searchRecursive(TreeNode root, int val)
+    {
+        //base
+        if(root == null)
+        {
+            return null; //traget absent
+        }
+
+        //check if root is target
+        if(root.val == val)
+        {
+            return root;
+        }
+
+        else if(root.val < val)
+        {
+            //target is in right subtree
+            return searchRecursive(root.right, val); 
+        }
+
+        //else if(root.val > val)
+        //target is in left subtree
+        return searchRecursive(root.left, val);
+    }
+}
+
+//Insert a node in BST
 // 701.
 class Solution {
     public TreeNode insertIntoBST(TreeNode root, int val) {
