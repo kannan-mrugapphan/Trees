@@ -2,32 +2,30 @@
 //breute force -> for each element in preorder list, invoke insert operation on bst -> time = O(n^2) in case of skewed tree
 //brute force -> sort preorder to get inorder and build tree with both preorder and inorder -> time - O(nlogn) for sorting plus O(n) extra space
 
-//time - O(n)
-//space - O(h)
 class Solution {
-    
-    int rootIndex = 0; //tracks root index in preorder list
-    
     public TreeNode bstFromPreorder(int[] preorder) {
-        return buildTree(preorder, Integer.MAX_VALUE); //initially root can be any value between -inf and inf
+        return treebuilder(preorder, new int[]{0}, Integer.MAX_VALUE);
     }
-    
-    //takes preorder list and upperbound tracks max allowed value for current root
-    public TreeNode buildTree(int[] preorder, int upperBound) {
-        if(preorder == null || preorder.length <= rootIndex || preorder[rootIndex] > upperBound)
+
+    //i/p - preorder list, current index tracking the next available element in preorder list, upper limit for current node
+    //time - O(n) 
+    //space - O(h) for call stack
+    private TreeNode treebuilder(int[] preorder, int[] currentIndex, int bound)
+    {
+        //base
+        if(currentIndex[0] == preorder.length || preorder[currentIndex[0]] >= bound)
         {
-            //1st element in preorder list is invalid
+            //current index in preorder list can't be used or preorder list is empty
             return null;
         }
-        
-        TreeNode root = new TreeNode(preorder[rootIndex++]); //1st element in preorder list is root
-        
-        //recursively build left and right subtrees
-        //for left subtree all elements must be smaller than root, so upper bound changes to root - 1
-        root.left = buildTree(preorder, root.val - 1); 
-        //for tight subtree all elements must be greater than root and less than incomin upper bound
-        root.right = buildTree(preorder, upperBound);
-        
+
+        //root of tree is 1st element in preorder list
+        TreeNode root = new TreeNode(preorder[currentIndex[0]]);
+        currentIndex[0]++; //current index is consumed by root
+
+        root.left = treebuilder(preorder, currentIndex, root.val); //bound for left sub tree of root is root itself
+        root.right = treebuilder(preorder, currentIndex, bound); //bound for right sub tree is same
+
         return root;
     }
 }
