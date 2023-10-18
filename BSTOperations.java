@@ -202,3 +202,103 @@ class Solution {
         return result;
     }
 }
+
+// 450.
+class Solution {
+    //total time - O(log n) for search and O(log n) for delete 
+    //total space - constant
+    public TreeNode deleteNode(TreeNode root, int key) {
+        //edge
+        if(root == null)
+        {
+            return null;
+        }
+
+        //search node to be deleted and its parent
+        TreeNode parent = null;
+        TreeNode target = null;
+
+        //search logic
+        //time - O(log n) with constant space
+        TreeNode current = root;
+        while(current != null)
+        {
+            //node found
+            if(current.val == key)
+            {
+                target = current;
+                break;
+            }
+
+            //node is in right subtree
+            else if(current.val < key)
+            {
+                parent = current;
+                current = current.right;
+            }
+
+            //node is in left subtree
+            else if(current.val > key)
+            {
+                parent = current;
+                current = current.left;
+            }
+        }        
+
+        //target is absent
+        if(target == null)
+        {
+            return root; //no deletion needed
+        }
+
+        //parent null and target not null means root of the tree has to be deleted
+        if(parent == null)
+        {
+            return handleDelete(target);
+        }
+
+        //delete target node and attach t0 parent
+        if(parent.left == target)
+        {
+            parent.left = handleDelete(target);
+        }
+        else
+        {
+            parent.right = handleDelete(target);
+        }
+
+        return root; //return after node deletion
+    }
+
+    //time - O(log n) to find min in left subtree
+    //space - O(1)
+    private TreeNode handleDelete(TreeNode target)
+    {
+        //edge
+        if(target.left == null)
+        {
+            return target.right; //target will be deleted and target's right will be attached to parent
+        }
+        if(target.right == null)
+        {
+            return target.left; //target will be deleted and target's left will be attached to parent
+        }
+        
+        //approach - find max in left sub tree, attach right of max in left sub tree to right sub tree, return left subtree to be attached to parent
+        TreeNode maxInLeftSubtree = findMax(target.left);
+        maxInLeftSubtree.right = target.right;
+        return target.left;
+    }
+
+    //time - O(log n) to find min in left subtree
+    //space - O(1)
+    private TreeNode findMax(TreeNode node)
+    {
+        //max is the rightmost element in bst
+        while(node.right != null)
+        {
+            node = node.right;
+        }
+        return node;
+    }
+}
